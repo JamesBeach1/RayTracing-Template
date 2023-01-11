@@ -7,12 +7,31 @@
 
 #include "Renderer.h"
 #include "Camera.h"
+#include "Scene.h"
 
 using namespace Walnut;
 
 class PrimaryLayer : public Walnut::Layer
 {
 public:
+
+	PrimaryLayer() {
+
+		{
+			Sphere sphere;
+			scene.objects.push_back(sphere);
+		}
+
+		{
+
+			Sphere sphere;
+			sphere.position = glm::vec3(2.0f, 0.0f, -3.0f);
+			scene.objects.push_back(sphere);
+
+		}
+
+	}
+
 	virtual void OnUIRender() override
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
@@ -51,7 +70,7 @@ public:
 
 		renderer.OnResize(viewportWidth, viewportHeight);
 		camera.OnResize(viewportWidth, viewportHeight);
-		renderer.Render(camera);
+		renderer.Render(camera, scene);
 
 		lastRenderTime = timer.ElapsedMillis();
 	}
@@ -59,6 +78,7 @@ public:
 private:
 	Renderer renderer;
 	Camera camera;
+	Scene scene;
 
 	uint32_t viewportWidth = 0;
 	uint32_t viewportHeight = 0;

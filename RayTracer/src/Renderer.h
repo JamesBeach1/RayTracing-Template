@@ -14,13 +14,13 @@ public:
 	Renderer() = default;
 
 	void OnResize(uint32_t width, uint32_t height);
-	void Render(const Camera& camera);
+	void Render(const Camera& camera, const Scene& scene);
 
 	std::shared_ptr<Walnut::Image> GetFinalImage() const { return image; }
 
 private:
 
-	glm::vec4 getPixelColour(Ray& ray);
+	glm::vec4 getPixelColour(Ray& ray, const Scene& scene);
 
 	const Scene* scene = nullptr;
 	const Camera* camera = nullptr;

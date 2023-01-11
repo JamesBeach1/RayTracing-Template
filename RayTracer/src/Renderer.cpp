@@ -1,6 +1,9 @@
 #include "Renderer.h"
 #include "Camera.h"
 #include "Ray.h"
+#include "Scene.h"
+
+#include <iostream>
 
 #include "Walnut/Random.h"
 #include <glm/gtc/matrix_transform.hpp>
@@ -24,7 +27,6 @@ void Renderer::OnResize(uint32_t width, uint32_t height)
 {
 	if (image)
 	{
-		// No resize necessary
 		if (image->GetWidth() == width && image->GetHeight() == height)
 			return;
 
@@ -39,7 +41,7 @@ void Renderer::OnResize(uint32_t width, uint32_t height)
 	imageData = new uint32_t[width * height];
 }
 
-void Renderer::Render(const Camera& camera)
+void Renderer::Render(const Camera& camera, const Scene& scene)
 {
 
 	Ray ray;
@@ -52,7 +54,7 @@ void Renderer::Render(const Camera& camera)
 
 			ray.direction = camera.GetRayDirections()[x + y * image->GetWidth()];
 
-			glm::vec4 color = getPixelColour(ray);
+			glm::vec4 color = getPixelColour(ray, scene);
 			color = glm::clamp(color, glm::vec4(0.0f), glm::vec4(1.0f));
 
 			imageData[x + y * image->GetWidth()] = Utils::ConvertToRGBA(color);
@@ -62,24 +64,42 @@ void Renderer::Render(const Camera& camera)
 	image->SetData(imageData);
 }
 
-glm::vec4 Renderer::getPixelColour(Ray& ray)
+glm::vec4 Renderer::getPixelColour(Ray& ray, const Scene& scene)
 {
 
-	float radius = 0.5f;
+	const Sphere* closestObject = nullptr;
+	float minHitDistance = FLT_MAX;
 
-	float a = glm::dot(ray.direction, ray.direction);
-	float b = 2.0f * glm::dot(ray.origin, ray.direction);
-	float c = glm::dot(ray.origin, ray.origin) - radius * radius;
+	for (int i = 0; i < scene.objects.size(); i++) {
+		const Sphere& object = scene.objects[i];
+		glm::vec3 origin = ray.origin - object.position;
 
-	float discriminant = b * b - 4.0f * a * c;
-	if (discriminant < 0.0f)
+		float a = glm::dot(ray.direction, ray.direction);
+		float b = 2.0f * glm::dot(origin, ray.direction);
+		float c = glm::dot(origin, origin) - object.radius * object.radius;
+
+		float discriminant = b * b - 4.0f * a * c;
+		if (discriminant < 0.0f)
+			continue;
+
+		float hitDist0 = (-b + glm::sqrt(discriminant)) / (2 * a);
+		float hitDist1 = (-b - glm::sqrt(discriminant)) / (2 * a);
+
+		float closestHit = glm::min(hitDist0, hitDist1);
+
+		if (closestHit < minHitDistance) {
+			minHitDistance = closestHit;
+			closestObject = &object;
+		}
+	}
+
+	if (closestObject == nullptr) {
 		return glm::vec4(glm::vec3(0.0f), 1.0f);
+	}
 
-	float hitDist0 = (-b + glm::sqrt(discriminant)) / (2 * a);
-	float hitDist1 = (-b - glm::sqrt(discriminant)) / (2 * a);
-
-	float minHitDistance = glm::min(hitDist0, hitDist1);
-	glm::vec3 hitPoint = glm::vec3(ray.origin + ray.direction * minHitDistance);
+	glm::vec3 origin = ray.origin - closestObject->position;
+	
+	glm::vec3 hitPoint = glm::vec3(origin + ray.direction * minHitDistance);
 
 	glm::vec3 normal = glm::normalize(hitPoint);
 
@@ -90,5 +110,5 @@ glm::vec4 Renderer::getPixelColour(Ray& ray)
 	glm::vec3 sphereColour = glm::vec3(1, 0, 1);
 	sphereColour *= intensity;
 
-	return glm::vec4(sphereColour,1);
+	return glm::vec4(sphereColour, 1);
 }
