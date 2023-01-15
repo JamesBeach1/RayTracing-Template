@@ -3,8 +3,6 @@
 #include "Ray.h"
 #include "Scene.h"
 
-#include <iostream>
-
 #include "Walnut/Random.h"
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -67,48 +65,31 @@ void Renderer::Render(const Camera& camera, const Scene& scene)
 glm::vec4 Renderer::getPixelColour(Ray& ray, const Scene& scene)
 {
 
-	const Sphere* closestObject = nullptr;
+	const Hittable* closestObject = nullptr;
+	RayPayload closestHit;
 	float minHitDistance = FLT_MAX;
 
 	for (int i = 0; i < scene.objects.size(); i++) {
-		const Sphere* object = scene.objects[i];
-		glm::vec3 origin = ray.origin - object->position;
+		Hittable* object = scene.objects[i];
+		RayPayload payload = object->Hit(ray, i);
 
-		float a = glm::dot(ray.direction, ray.direction);
-		float b = 2.0f * glm::dot(origin, ray.direction);
-		float c = glm::dot(origin, origin) - object->radius * object->radius;
-
-		float discriminant = b * b - 4.0f * a * c;
-		if (discriminant < 0.0f)
-			continue;
-
-		float hitDist0 = (-b + glm::sqrt(discriminant)) / (2 * a);
-		float hitDist1 = (-b - glm::sqrt(discriminant)) / (2 * a);
-
-		float closestHit = glm::min(hitDist0, hitDist1);
-
-		if (closestHit < minHitDistance) {
-			minHitDistance = closestHit;
+		if (payload.hitDistance < minHitDistance && payload.hitDistance > 0) {
+			minHitDistance = payload.hitDistance;
 			closestObject = object;
+			closestHit = payload;
 		}
 	}
 
-	if (closestObject == nullptr) {
+	if (closestHit.hitDistance == -1.0f) {
 		return glm::vec4(glm::vec3(0.0f), 1.0f);
 	}
 
-	glm::vec3 origin = ray.origin - closestObject->position;
-	
-	glm::vec3 hitPoint = glm::vec3(origin + ray.direction * minHitDistance);
-
-	glm::vec3 normal = glm::normalize(hitPoint);
-
 	glm::vec3 lightDir = glm::normalize(glm::vec3(-1, -1, -1));
 
-	float intensity = glm::max(glm::dot(normal, -lightDir), 0.0f);
+	float intensity = glm::max(glm::dot(closestHit.hitNormal, -lightDir), 0.0f);
 
-	glm::vec3 sphereColour = glm::vec3(1, 0, 1);
-	sphereColour *= intensity;
+	glm::vec3 objectColour = glm::vec3(1, 0, 1);
+	objectColour *= intensity;
 
-	return glm::vec4(sphereColour, 1);
+	return glm::vec4(objectColour, 1);
 }

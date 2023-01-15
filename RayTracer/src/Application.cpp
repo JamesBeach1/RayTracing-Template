@@ -24,7 +24,6 @@ public:
 		Sphere* sphere2 = new Sphere();
 		sphere2->position = glm::vec3(2.0f, 0.0f, -3.0f);
 		sphere2->radius = 1.0f;
-		//scene.objects.push_back(&sphere2);
 		scene.objects.push_back(sphere2);
 
 
