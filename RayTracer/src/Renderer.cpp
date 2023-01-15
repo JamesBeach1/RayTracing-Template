@@ -71,12 +71,12 @@ glm::vec4 Renderer::getPixelColour(Ray& ray, const Scene& scene)
 	float minHitDistance = FLT_MAX;
 
 	for (int i = 0; i < scene.objects.size(); i++) {
-		const Sphere& object = scene.objects[i];
-		glm::vec3 origin = ray.origin - object.position;
+		const Sphere* object = scene.objects[i];
+		glm::vec3 origin = ray.origin - object->position;
 
 		float a = glm::dot(ray.direction, ray.direction);
 		float b = 2.0f * glm::dot(origin, ray.direction);
-		float c = glm::dot(origin, origin) - object.radius * object.radius;
+		float c = glm::dot(origin, origin) - object->radius * object->radius;
 
 		float discriminant = b * b - 4.0f * a * c;
 		if (discriminant < 0.0f)
@@ -89,7 +89,7 @@ glm::vec4 Renderer::getPixelColour(Ray& ray, const Scene& scene)
 
 		if (closestHit < minHitDistance) {
 			minHitDistance = closestHit;
-			closestObject = &object;
+			closestObject = object;
 		}
 	}
 

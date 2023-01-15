@@ -7,7 +7,7 @@
 
 struct Scene {
 
-	std::vector<Sphere> objects;
+	std::vector<Sphere*> objects;
 	std::vector<Material> materials;
 
 };

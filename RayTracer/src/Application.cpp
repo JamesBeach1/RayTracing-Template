@@ -17,18 +17,16 @@ public:
 
 	PrimaryLayer() {
 
-		{
-			Sphere sphere;
-			scene.objects.push_back(sphere);
-		}
+		
+		Sphere* sphere1 = new Sphere();
+		scene.objects.push_back(sphere1);
 
-		{
+		Sphere* sphere2 = new Sphere();
+		sphere2->position = glm::vec3(2.0f, 0.0f, -3.0f);
+		sphere2->radius = 1.0f;
+		//scene.objects.push_back(&sphere2);
+		scene.objects.push_back(sphere2);
 
-			Sphere sphere;
-			sphere.position = glm::vec3(2.0f, 0.0f, -3.0f);
-			scene.objects.push_back(sphere);
-
-		}
 
 	}
 
