@@ -44,7 +44,7 @@ public:
 		glm::vec3 normal = glm::normalize(hitPoint);
 
 		payload.hitDistance = closestHit;
-		payload.hitPosition = hitPoint;
+		payload.hitPosition = hitPoint + position;
 		payload.hitNormal = normal;
 		payload.hittableIndex = idx;
 

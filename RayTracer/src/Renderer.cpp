@@ -42,17 +42,15 @@ void Renderer::OnResize(uint32_t width, uint32_t height)
 void Renderer::Render(const Camera& camera, const Scene& scene)
 {
 
-	Ray ray;
-	ray.origin = camera.GetPosition();
+	activeCamera = &camera;
+	activeScene = &scene;
 
 	for (uint32_t y = 0; y < image->GetHeight(); y++)
 	{
 		for (uint32_t x = 0; x < image->GetWidth(); x++)
 		{
 
-			ray.direction = camera.GetRayDirections()[x + y * image->GetWidth()];
-
-			glm::vec4 color = getPixelColour(ray, scene);
+			glm::vec4 color = getPixelColour(x, y);
 			color = glm::clamp(color, glm::vec4(0.0f), glm::vec4(1.0f));
 
 			imageData[x + y * image->GetWidth()] = Utils::ConvertToRGBA(color);
@@ -62,34 +60,55 @@ void Renderer::Render(const Camera& camera, const Scene& scene)
 	image->SetData(imageData);
 }
 
-glm::vec4 Renderer::getPixelColour(Ray& ray, const Scene& scene)
+glm::vec4 Renderer::getPixelColour(uint32_t x, uint32_t y)
 {
 
-	const Hittable* closestObject = nullptr;
+	Ray ray;
+	ray.origin = activeCamera->GetPosition();
+	ray.direction = activeCamera->GetRayDirections()[x + y * image->GetWidth()];
+
+	glm::vec3 lightDir = activeScene->lightDirection;
+	glm::vec3 color(0.0f);
+	float multiplier = 1.0f;
+
+	for(int i = 0; i < 5; i++){
+		RayPayload closestHit = traceRay(ray);
+
+		if (closestHit.hitDistance == -1.0f) {
+			color += activeScene->skyColour * multiplier;
+			break;
+		}
+
+		float intensity = glm::max(glm::dot(closestHit.hitNormal, -lightDir), 0.0f);
+
+		Hittable* object = activeScene->objects[closestHit.hittableIndex];
+		glm::vec3 objectColour = activeScene->materials[object->materialIndex]->albedo;
+		objectColour *= intensity;
+
+		color += objectColour * multiplier;
+		multiplier *= 0.5f;
+
+		ray.origin = closestHit.hitPosition + closestHit.hitNormal * 0.0001f;
+		ray.direction = glm::reflect(ray.direction, closestHit.hitNormal);
+	}
+
+	return glm::vec4(color, 1);
+}
+
+RayPayload Renderer::traceRay(Ray& ray)
+{
 	RayPayload closestHit;
 	float minHitDistance = FLT_MAX;
 
-	for (int i = 0; i < scene.objects.size(); i++) {
-		Hittable* object = scene.objects[i];
+	for (int i = 0; i < activeScene->objects.size(); i++) {
+		Hittable* object = activeScene->objects[i];
 		RayPayload payload = object->Hit(ray, i);
 
 		if (payload.hitDistance < minHitDistance && payload.hitDistance > 0) {
 			minHitDistance = payload.hitDistance;
-			closestObject = object;
 			closestHit = payload;
 		}
 	}
 
-	if (closestHit.hitDistance == -1.0f) {
-		return glm::vec4(glm::vec3(0.0f), 1.0f);
-	}
-
-	glm::vec3 lightDir = glm::normalize(glm::vec3(-1, -1, -1));
-
-	float intensity = glm::max(glm::dot(closestHit.hitNormal, -lightDir), 0.0f);
-
-	glm::vec3 objectColour = glm::vec3(1, 0, 1);
-	objectColour *= intensity;
-
-	return glm::vec4(objectColour, 1);
+	return closestHit;
 }

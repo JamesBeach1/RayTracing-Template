@@ -20,10 +20,11 @@ public:
 
 private:
 
-	glm::vec4 getPixelColour(Ray& ray, const Scene& scene);
+	glm::vec4 getPixelColour(uint32_t x, uint32_t y);
+	RayPayload traceRay(Ray& ray);
 
-	const Scene* scene = nullptr;
-	const Camera* camera = nullptr;
+	const Scene* activeScene = nullptr;
+	const Camera* activeCamera = nullptr;
 
 	std::shared_ptr<Walnut::Image> image;
 	uint32_t* imageData = nullptr;

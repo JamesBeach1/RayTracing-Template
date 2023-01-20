@@ -8,6 +8,7 @@
 #include "Renderer.h"
 #include "Camera.h"
 #include "Scene.h"
+#include "Material.h"
 
 using namespace Walnut;
 
@@ -17,13 +18,21 @@ public:
 
 	PrimaryLayer() {
 
+		Material* mat1 = new Material();
+		mat1->albedo = glm::vec3(1, 0, 0);
+		scene.materials.push_back(mat1);
+
+		Material* mat2 = new Material();
+		mat2->albedo = glm::vec3(0, 1, 0);
+		scene.materials.push_back(mat2);
 		
 		Sphere* sphere1 = new Sphere();
 		scene.objects.push_back(sphere1);
 
 		Sphere* sphere2 = new Sphere();
-		sphere2->position = glm::vec3(2.0f, 0.0f, -3.0f);
-		sphere2->radius = 1.0f;
+		sphere2->position = glm::vec3(0.0f, -100.5f, -2.0f);
+		sphere2->radius = 100.0f;
+		sphere2->materialIndex = 1;
 		scene.objects.push_back(sphere2);
 
 
