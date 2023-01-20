@@ -20,8 +20,10 @@ public:
 
 private:
 
-	glm::vec4 getPixelColour(uint32_t x, uint32_t y);
 	RayPayload traceRay(Ray& ray);
+	glm::vec3 Color(Ray& r, int depth);
+
+	std::vector<uint32_t> widthIterator, heightIterator;
 
 	const Scene* activeScene = nullptr;
 	const Camera* activeCamera = nullptr;

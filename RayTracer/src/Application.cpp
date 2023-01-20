@@ -18,11 +18,11 @@ public:
 
 	PrimaryLayer() {
 
-		Material* mat1 = new Material();
+		Material* mat1 = new Lambertian();
 		mat1->albedo = glm::vec3(1, 0, 0);
 		scene.materials.push_back(mat1);
 
-		Material* mat2 = new Material();
+		Material* mat2 = new Lambertian();
 		mat2->albedo = glm::vec3(0, 1, 0);
 		scene.materials.push_back(mat2);
 		
