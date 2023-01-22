@@ -11,10 +11,16 @@ struct Ray {
 
 struct RayPayload {
 
-	glm::vec3 hitPosition;
-	glm::vec3 hitNormal;
+	glm::vec3 hitPosition{ -1.0f };
+	glm::vec3 hitNormal{ -1.0f };
 
 	float hitDistance = -1.0f;
 	int hittableIndex = -1;
+	bool frontFace = true;
+
+	inline void setFaceNormal(const Ray& ray, const glm::vec3& outwardNormal) {
+		frontFace = glm::dot(ray.direction, outwardNormal) < 0.0f;
+		hitNormal = frontFace ? outwardNormal : -outwardNormal;
+	}
 
 };

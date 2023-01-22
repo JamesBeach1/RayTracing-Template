@@ -18,10 +18,13 @@ public:
 
 	std::shared_ptr<Walnut::Image> GetFinalImage() const { return image; }
 
+	bool accumulate = true;
+	void resetSampleIndex() { sampleIndex = 1; }
+
 private:
 
 	RayPayload traceRay(Ray& ray);
-	glm::vec3 Color(Ray& r, int depth);
+	glm::vec3 Colour(Ray& r, int depth);
 
 	std::vector<uint32_t> widthIterator, heightIterator;
 
@@ -30,5 +33,8 @@ private:
 
 	std::shared_ptr<Walnut::Image> image;
 	uint32_t* imageData = nullptr;
+
+	glm::vec4* accumulatedData = nullptr;
+	uint32_t sampleIndex = 1;
 
 };

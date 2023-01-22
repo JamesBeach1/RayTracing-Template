@@ -41,7 +41,6 @@ bool Camera::onUpdate() {
 	if (!Input::IsMouseButtonDown(MouseButton::Left))
 	{
 		Input::SetCursorMode(CursorMode::Normal);
-		return false;
 	}
 
 	if (Input::IsMouseButtonDown(MouseButton::Left)) {

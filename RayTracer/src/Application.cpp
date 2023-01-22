@@ -25,15 +25,32 @@ public:
 		Material* mat2 = new Lambertian();
 		mat2->albedo = glm::vec3(0, 1, 0);
 		scene.materials.push_back(mat2);
+
+		Material* mat3 = new Metal(glm::vec3(0.7, 0.7, 0.7), 0.01f);
+		scene.materials.push_back(mat3);
+
+		Material* mat4 = new Dielectric();
+		scene.materials.push_back(mat4);
 		
 		Sphere* sphere1 = new Sphere();
+		sphere1->materialIndex = 2;
 		scene.objects.push_back(sphere1);
 
 		Sphere* sphere2 = new Sphere();
-		sphere2->position = glm::vec3(0.0f, -100.5f, -2.0f);
+		sphere2->position = glm::vec3(0.0f, -100.5f, 0.0f);
 		sphere2->radius = 100.0f;
 		sphere2->materialIndex = 1;
 		scene.objects.push_back(sphere2);
+
+		Sphere* sphere3 = new Sphere();
+		sphere3->materialIndex = 0;
+		sphere3->position = glm::vec3(1.0f, 0.0f, 0.0f);
+		scene.objects.push_back(sphere3);
+
+		Sphere* sphere4 = new Sphere();
+		sphere4->materialIndex = 3;
+		sphere4->position = glm::vec3(-1.0f, 0.0f, 0.0f);
+		scene.objects.push_back(sphere4);
 
 
 	}
@@ -66,7 +83,8 @@ public:
 
 	virtual void OnUpdate(float ts) override
 	{
-		camera.onUpdate();
+		if (camera.onUpdate())
+			renderer.resetSampleIndex();
 	}
 
 
