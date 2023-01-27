@@ -1,6 +1,5 @@
-# Walnut App Template
+# Ray Tracing Template
 
-This is a simple app template for [Walnut](https://github.com/TheCherno/Walnut) - unlike the example within the Walnut repository, this keeps Walnut as an external submodule and is much more sensible for actually building applications. See the [Walnut](https://github.com/TheCherno/Walnut) repository for more details.
+This is a rough template to be used as a base for 2 additional renderers, one monte-carlo, and the other a rasterised hybrid renderer as part of my 4th year university research project. It is the intent for this project to contain a rough real-time monte-carlo ray tracer implementation, along with the facilities to benchmark and modify the scene (or at least a baseline to be imrpoved later).
 
-## Getting Started
-Once you've cloned, you can customize the `premake5.lua` and `WalnutApp/premake5.lua` files to your liking (eg. change the name from "WalnutApp" to something else).  Once you're happy, run `scripts/Setup.bat` to generate Visual Studio 2022 solution/project files. Your app is located in the `WalnutApp/` directory, which some basic example code to get you going in `WalnutApp/src/WalnutApp.cpp`. I recommend modifying that WalnutApp project to create your own application, as everything should be setup and ready to go.
+The base application runs in Vulkan and is implemented using [Walnut](https://github.com/TheCherno/Walnut).

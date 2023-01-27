@@ -43,7 +43,7 @@ bool Camera::onUpdate() {
 		Input::SetCursorMode(CursorMode::Normal);
 	}
 
-	if (Input::IsMouseButtonDown(MouseButton::Left)) {
+	if (Input::IsMouseButtonDown(MouseButton::Left) && !mouseDisabled) {
 
 		glm::vec2 mousePosition = Input::GetMousePosition();
 		glm::vec2 mouseDifference = glm::clamp(mousePosition - lastMousePosition, -100.0f, 100.0f);

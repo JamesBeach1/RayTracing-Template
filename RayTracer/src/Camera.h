@@ -19,6 +19,8 @@ public:
 
 	const std::vector<glm::vec3>& GetRayDirections() const { return rayDirections; }
 
+	bool mouseDisabled = false;
+
 
 private:
 	void RecalculateProjection();
